@@ -20,6 +20,23 @@ exports.searchNews = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+exports.healthCheck = async (req, res) => {
+ // const { query } = req.query;
+ // if (!query) return res.status(400).json({ message: "Search query is required" });
+
+  try {
+    // const news = await News.find({
+    //   $or: [
+    //     { title: { $regex: query, $options: "i" } },
+    //     { content: { $regex: query, $options: "i" } },
+    //   ],
+    // }).populate("author", "name");
+
+    res.json("hello");
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 // FILTER NEWS BY CATEGORY & AUTHOR
 exports.filterNews = async (req, res) => {
