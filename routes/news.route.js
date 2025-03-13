@@ -22,6 +22,7 @@ const router = express.Router();
  * 📌 PUBLIC ROUTES
  * ------------------------------- */
 router.get("/search", searchNews);
+router.get("/health", "running");
 router.get("/filter", filterNews);
 router.get("/", getAllNews);
 router.get("/:id", getSingleNews);
