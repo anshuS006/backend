@@ -4,7 +4,7 @@ require('dotenv').config(); // Load environment variables
 
 const dbConnect = async () => {
     try {
-        const uri = `${process.env.MONGO_URI}/${constants.DB_NAME}`;
+        const uri = `${process.env.MONGO_URI}`;
         await mongoose.connect(uri);
         const dbName = mongoose.connection.db.databaseName;
         console.log(`MongoDB connected to database: ${dbName}`);
