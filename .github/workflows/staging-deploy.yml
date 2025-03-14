@@ -9,55 +9,30 @@ env:
   CI: false
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Ensure full repo checkout
-        run: git fetch --unshallow
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          # Remove cache option if lock file is missing
-
-      - name: Install dependencies
-        run: npm install --no-audit --no-fund || echo "No lock file found, proceeding..."
-
-      - name: Ensure build directory exists
-        run: mkdir -p build
-
-      - name: Build project
-        run: npm run build
-
-      - name: Debug build output
-        run: ls -l ./build || echo "Build directory not found!"
-
-      - name: Upload staging-ready build files
-        uses: actions/upload-artifact@v4
-        with:
-          name: staging-files
-          path: ./build
-
   deploy:
-    name: Deploy
-    needs: build
+    name: Deploy to Staging
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/stg'
 
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Connect to GCP VM and Deploy
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          name: staging-files
-          path: ./build
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          publish_dir: ./build
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY }}
+          script: |
+            echo "🚀 Connecting to GCP VM..."
+            cd /home/${{ secrets.GCP_VM_USER }}/backend
+            echo "🔄 Pulling latest code..."
+            git pull origin stg
+            echo "📦 Installing dependencies..."
+            npm install
+            echo "⚙️ Running build step (if applicable)..."
+            npm run build || echo "No build step required"
+            echo "🔄 Restarting server with PM2..."
+            pm2 restart all || pm2 start server.js --name backend
+            echo "✅ Deployment to Staging Completed!"
