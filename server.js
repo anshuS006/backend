@@ -24,6 +24,7 @@ dbConnect();
 app.use('/api/users', userRoutes);
 
 app.use('/api/news', newsRoutes); // Category routes
+
 // app.use('/api/questions',authenticate, questionRoutes); // Question routes
 // app.use('/api/quizzes', authenticate,quizRoutes); // Register quiz routes
 
