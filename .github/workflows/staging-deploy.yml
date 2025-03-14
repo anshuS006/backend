@@ -1,0 +1,63 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - stg
+
+env:
+  CI: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Ensure full repo checkout
+        run: git fetch --unshallow
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          # Remove cache option if lock file is missing
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund || echo "No lock file found, proceeding..."
+
+      - name: Ensure build directory exists
+        run: mkdir -p build
+
+      - name: Build project
+        run: npm run build
+
+      - name: Debug build output
+        run: ls -l ./build || echo "Build directory not found!"
+
+      - name: Upload staging-ready build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-files
+          path: ./build
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/stg'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: staging-files
+          path: ./build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          publish_dir: ./build
