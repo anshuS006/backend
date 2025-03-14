@@ -1,18 +1,18 @@
-name: Deploy to Staging
+name: Deploy to Production
 
 on:
   push:
     branches:
-      - stg
+      - prod
 
 env:
   CI: false
 
 jobs:
   deploy:
-    name: Deploy to Staging
+    name: Deploy to Production
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/stg'
+    if: github.ref == 'refs/heads/prod'
 
     steps:
       - name: Checkout repository
