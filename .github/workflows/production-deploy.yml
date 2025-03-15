@@ -28,11 +28,11 @@ jobs:
             echo "🚀 Connecting to GCP VM..."
             cd /home/${{ secrets.GCP_VM_USER }}/backend
             echo "🔄 Pulling latest code..."
-            git pull origin stg
+            git pull origin prod
             echo "📦 Installing dependencies..."
             npm install
             echo "⚙️ Running build step (if applicable)..."
             npm run build || echo "No build step required"
             echo "🔄 Restarting server with PM2..."
-            pm2 restart all || pm2 start server.js --name backend
+            pm2 restart all || pm2 start server.js --name  media-app-backend-prod
             echo "✅ Deployment to Staging Completed!"
