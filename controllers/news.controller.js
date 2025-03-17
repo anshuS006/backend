@@ -32,7 +32,7 @@ exports.healthCheck = async (req, res) => {
     //   ],
     // }).populate("author", "name");
 
-    res.json("hello updateing");
+    res.json("hello updateing ravi");
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
